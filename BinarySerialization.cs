@@ -29,6 +29,9 @@ namespace Serialization
             if (obj is byte b)
                 return b.GetBytes();
             
+            if (obj is bool bo)
+                return bo.GetBytes();
+            
             if (obj is IDictionary dictionary)
             {
                 List<byte> data = new List<byte>();
@@ -98,6 +101,9 @@ namespace Serialization
         
             if(type == typeof(byte)) 
                 return ByteExtension.GetValue(data, ref offset);
+            
+            if (type == typeof(bool)) 
+                return BoolExtension.GetValue(data, ref offset);
             
             if(type.GetInterfaces().Any(i => i == typeof(IDictionary)))
             {
