@@ -16,14 +16,14 @@ namespace Serialization.Extensions
 
             return data.ToArray(); 
         }
-        public static IList GetValue<T>(byte[] data, ref int offset)
+        public static IList GetValue(Type type, byte[] data, ref int offset)
         {
             int count = (int)ObjectExtension.GetValue(typeof(int), data, ref offset);
-            var result = Array.CreateInstance(typeof(T), count);
+            var result = Array.CreateInstance(type.GetElementType(), count);
                 
             for (int i = 0; i < count; i++)
             {
-                var value = ObjectExtension.GetValue(typeof(T), data, ref offset);
+                var value = ObjectExtension.GetValue(type.GetElementType(), data, ref offset);
                 result.SetValue(value, i);
             }
             

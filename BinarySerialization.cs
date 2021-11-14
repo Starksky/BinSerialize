@@ -13,7 +13,7 @@ namespace Serialization
         private static byte[] GetBytes(object obj)
         {
             var bytes = obj.GetBytes();
-            if (bytes != null && bytes.Length > 0)
+            if (bytes.Length > 0)
                 return bytes;
 
             if (obj.GetType().IsClass)

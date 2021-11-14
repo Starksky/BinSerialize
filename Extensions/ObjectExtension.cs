@@ -59,6 +59,14 @@ namespace Serialization.Extensions
                 return data.ToArray();
             }
             
+            if (value is IList list)
+            {
+                var bytes = list.GetBytes();
+                data.AddRange(bytes.Length.GetBytes());
+                data.AddRange(bytes);
+                return data.ToArray();
+            }
+            
             return default;
         }
         
@@ -81,6 +89,9 @@ namespace Serialization.Extensions
             if (type == typeof(bool))
                 return BoolExtension.GetValue(data, ref offset);
             
+            if (type.GetInterfaces().Any(i => i == typeof(IList)))
+                return ListExtension.GetValue(type, data, ref offset);
+            
             if (type.GetInterfaces().Any(i => i == typeof(IDictionary)))
                 return DictionaryExtension.GetValue(type, data, ref offset);
 
@@ -93,6 +104,12 @@ namespace Serialization.Extensions
             Array.Copy(data, offset, result, 0, count);
             offset += count;
             return result;
+        }
+        
+        public static object GetValue(Type type, byte[] data)
+        {
+            int offset = 0;
+            return GetValue(type, data, ref offset);
         }
     }
 }
