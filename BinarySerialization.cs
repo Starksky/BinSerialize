@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Serialization.Extensions;
+using UnityEngine;
 
 namespace Serialization
 {
@@ -11,73 +12,9 @@ namespace Serialization
     {
         private static byte[] GetBytes(object obj)
         {
-            if (obj is string s)
-            {
-                List<byte> data = new List<byte>();
-                var result = s.GetBytes();
-                data.AddRange(result.Length.GetBytes());
-                data.AddRange(result);
-                return data.ToArray();
-            }
-        
-            if(obj is int i) 
-                return i.GetBytes();
-        
-            if(obj is float f) 
-                return f.GetBytes();
-
-            if (obj is byte b)
-                return b.GetBytes();
-            
-            if (obj is bool bo)
-                return bo.GetBytes();
-            
-            if (obj is IDictionary dictionary)
-            {
-                List<byte> data = new List<byte>();
-            
-                data.AddRange(GetBytes(dictionary.Count));
-            
-                foreach (var item in dictionary)
-                {
-                    var property = item.GetType().GetProperty("Key");
-                    var value = property.GetValue(item);
-                    data.AddRange(GetBytes(value));
-                
-                    property = item.GetType().GetProperty("Value");
-                    value = property.GetValue(item);
-                    data.AddRange(GetBytes(value));
-                }
-            
-                return data.ToArray(); 
-            }
-        
-            if (obj is IList list)
-            {
-                List<byte> data = new List<byte>();
-                
-                data.AddRange(GetBytes(list.Count));
-                foreach (var item in list)
-                    data.AddRange(GetBytes(item));
-
-                return data.ToArray(); 
-            }
-
-            if (obj.GetType().IsArray)
-            {
-                List<byte> data = new List<byte>();
-
-                var property = obj.GetType().GetProperty("Length");
-                var value = property.GetValue(obj);
-                data.AddRange(GetBytes(value));
-
-                var array = obj as Array;
-
-                foreach (var item in array)
-                    data.AddRange(GetBytes(item));
-
-                return data.ToArray();
-            }
+            var bytes = obj.GetBytes();
+            if (bytes != null && bytes.Length > 0)
+                return bytes;
 
             if (obj.GetType().IsClass)
                 return Serialization(obj);
@@ -87,74 +24,10 @@ namespace Serialization
 
         private static object GetValue(Type type, in byte[] data, ref int offset)
         {
-            if (type == typeof(string))
-            {
-                int count = IntExtension.GetValue(data, ref offset);
-                return StringExtension.GetValue(data, ref offset, count);
-            }
-        
-            if (type == typeof(int)) 
-                return IntExtension.GetValue(data, ref offset);
-        
-            if (type == typeof(float)) 
-                return FloatExtension.GetValue(data, ref offset);
-        
-            if(type == typeof(byte)) 
-                return ByteExtension.GetValue(data, ref offset);
-            
-            if (type == typeof(bool)) 
-                return BoolExtension.GetValue(data, ref offset);
-            
-            if(type.GetInterfaces().Any(i => i == typeof(IDictionary)))
-            {
-                Type[] arguments = type.GetGenericArguments();
-                Type keyType = arguments[0];
-                Type valueType = arguments[1];
-            
-                var result = type.Assembly.CreateInstance(type.FullName) as IDictionary;
-                int count = (int)GetValue(typeof(int), data, ref offset);
-            
-                for (int i = 0; i < count; i++)
-                {
-                    var key = GetValue(keyType, data, ref offset);
-                    var value = GetValue(valueType, data, ref offset);
-                    result.Add(key, value);
-                }
-            
+            var result = ObjectExtension.GetValue(type, data, ref offset);
+            if(result != null)
                 return result;
-            }
 
-            if(type.GetInterfaces().Any(i => i == typeof(IList)))
-            {
-                Type[] arguments = type.GetGenericArguments();
-                Type valueType = arguments[0];
-
-                var result = type.Assembly.CreateInstance(type.FullName) as IList;
-                int count = (int)GetValue(typeof(int), data, ref offset);
-            
-                for (int i = 0; i < count; i++)
-                {
-                    var value = GetValue(valueType, data, ref offset);
-                    result.Add(value);
-                }
-            
-                return result;
-            }
-            
-            if (type.IsArray)
-            {
-                var result = type.Assembly.CreateInstance(type.FullName) as IList;
-                int count = (int)GetValue(typeof(int), data, ref offset);
-                
-                for (int i = 0; i < count; i++)
-                {
-                    var value = GetValue(type.GetElementType(), data, ref offset);
-                    result.Add(value);
-                }
-            
-                return result;
-            }
-            
             if (type.IsClass)
                 return Deserialization(type, data, ref offset);
 

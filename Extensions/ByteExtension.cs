@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Serialization.Extensions
 {
@@ -14,7 +15,9 @@ namespace Serialization.Extensions
         }
         public static byte GetValue(byte[] data, ref int offset)
         {
-            return data[offset++];
+            byte result = data[offset];
+            offset += 1;
+            return result;
         }
     }
 }
