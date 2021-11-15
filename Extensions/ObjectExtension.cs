@@ -111,5 +111,38 @@ namespace Serialization.Extensions
             int offset = 0;
             return GetValue(type, data, ref offset);
         }
+        
+        public static T GetValue<T>(this object value)
+        {
+            if (value is byte[] array)
+            {
+                int offset = 0;
+                object result = null;
+                
+                if (typeof(T) == typeof(string))
+                    result = StringExtension.GetValue(array, ref offset);
+
+                else if (typeof(T) == typeof(int)) 
+                    result = IntExtension.GetValue(array, ref offset);
+        
+                else if (typeof(T) == typeof(float)) 
+                    result = FloatExtension.GetValue(array, ref offset);
+        
+                else if(typeof(T) == typeof(byte)) 
+                    result = ByteExtension.GetValue(array, ref offset);
+
+                else if (typeof(T) == typeof(bool))
+                    result = BoolExtension.GetValue(array, ref offset);
+            
+                else if (typeof(T).GetInterfaces().Any(i => i == typeof(IList)))
+                    result = ListExtension.GetValue(typeof(T), array, ref offset);
+            
+                else if (typeof(T).GetInterfaces().Any(i => i == typeof(IDictionary)))
+                    result = DictionaryExtension.GetValue(typeof(T), array, ref offset);
+
+                return (T)result;
+            }
+            return default;
+        }
     }
 }
