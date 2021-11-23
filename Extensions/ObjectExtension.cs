@@ -67,7 +67,7 @@ namespace Serialization.Extensions
                 return data.ToArray();
             }
             
-            return default;
+            return data.ToArray();
         }
         
         public static object GetValue(Type type, byte[] data, ref int offset)
