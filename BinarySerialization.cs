@@ -17,7 +17,13 @@ namespace Serialization
                 return bytes;
 
             if (obj.GetType().IsClass)
-                return Serialization(obj);
+            {
+                List<byte> data = new List<byte>();
+                bytes = Serialization(obj);
+                data.AddRange(bytes.Length.GetBytes());
+                data.AddRange(bytes);
+                return data.ToArray();
+            }
         
             return default;
         }

@@ -12,68 +12,31 @@ namespace Serialization.Extensions
             List<byte> data = new List<byte>();
             
             if (value is string s)
-            {
-                var bytes = s.GetBytes();
-                data.AddRange(bytes.Length.GetBytes());
-                data.AddRange(bytes);
-                return data.ToArray();
-            }
-            
-            if(value is int i)
-            {
-                var bytes = i.GetBytes();
-                data.AddRange(bytes.Length.GetBytes());
-                data.AddRange(bytes);
-                return data.ToArray();
-            }
+                return s.GetBytes();
+
+            if (value is int i)
+                return i.GetBytes();
 
             if (value is float f)
-            {
-                var bytes = f.GetBytes();
-                data.AddRange(bytes.Length.GetBytes());
-                data.AddRange(bytes);
-                return data.ToArray();
-            }
+                return f.GetBytes();
 
             if (value is byte b)
-            {
-                var bytes = b.GetBytes();
-                data.AddRange(bytes.Length.GetBytes());
-                data.AddRange(bytes);
-                return data.ToArray();
-            }
-            
+                return b.GetBytes();
+
             if (value is bool bo)
-            {
-                var bytes = bo.GetBytes();
-                data.AddRange(bytes.Length.GetBytes());
-                data.AddRange(bytes);
-                return data.ToArray();
-            }
-            
+                return bo.GetBytes();
+
             if (value is IDictionary dictionary)
-            {
-                var bytes = dictionary.GetBytes();
-                data.AddRange(bytes.Length.GetBytes());
-                data.AddRange(bytes);
-                return data.ToArray();
-            }
-            
+                return dictionary.GetBytes();
+
             if (value is IList list)
-            {
-                var bytes = list.GetBytes();
-                data.AddRange(bytes.Length.GetBytes());
-                data.AddRange(bytes);
-                return data.ToArray();
-            }
-            
+                return list.GetBytes();
+
             return data.ToArray();
         }
         
         public static object GetValue(Type type, byte[] data, ref int offset)
         {
-            int count = IntExtension.GetValue(data, ref offset);
-            
             if (type == typeof(string))
                 return StringExtension.GetValue(data, ref offset);
 
@@ -95,6 +58,7 @@ namespace Serialization.Extensions
             if (type.GetInterfaces().Any(i => i == typeof(IDictionary)))
                 return DictionaryExtension.GetValue(type, data, ref offset);
 
+            int count = IntExtension.GetValue(data, ref offset);
             return GetValue(data, ref offset, count);
         }
         
