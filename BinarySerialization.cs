@@ -79,7 +79,7 @@ namespace Serialization
             return result.ToArray();
         }
     
-        private static object Deserialization(Type type, in byte[] data, ref int offset)
+        public static object Deserialization(Type type, in byte[] data, ref int offset)
         {
             if (type.GetCustomAttribute(typeof(SerializableAttribute), true) == null) return default;
 
@@ -94,6 +94,8 @@ namespace Serialization
                      field.FieldType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
                     continue;
 
+                Debug.Log(field.Name);
+                
                 field.SetValue(result, GetValue(field.FieldType, data, ref offset));
             }
         
@@ -103,6 +105,8 @@ namespace Serialization
                      property.PropertyType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
                     continue;
 
+                Debug.Log(property.Name);
+                
                 property.SetValue(result, GetValue(property.PropertyType, data, ref offset));
             }
         

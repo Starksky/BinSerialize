@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Serialization.Extensions
 {
@@ -26,6 +27,9 @@ namespace Serialization.Extensions
             if (value is bool bo)
                 return bo.GetBytes();
 
+            if (value is Array array)
+                return array.GetBytes();
+            
             if (value is IDictionary dictionary)
                 return dictionary.GetBytes();
 
@@ -51,6 +55,9 @@ namespace Serialization.Extensions
 
             if (type == typeof(bool))
                 return BoolExtension.GetValue(data, ref offset);
+            
+            if (type.IsArray)
+                return ArrayExtension.GetValue(type, data, ref offset);
             
             if (type.GetInterfaces().Any(i => i == typeof(IList)))
                 return ListExtension.GetValue(type, data, ref offset);
