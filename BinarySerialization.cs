@@ -94,8 +94,6 @@ namespace Serialization
                      field.FieldType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
                     continue;
 
-                Debug.Log(field.Name);
-                
                 field.SetValue(result, GetValue(field.FieldType, data, ref offset));
             }
         
@@ -105,8 +103,6 @@ namespace Serialization
                      property.PropertyType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
                     continue;
 
-                Debug.Log(property.Name);
-                
                 property.SetValue(result, GetValue(property.PropertyType, data, ref offset));
             }
         
