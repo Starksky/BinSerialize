@@ -57,13 +57,13 @@ namespace Serialization.Extensions
             
             if (type.GetInterfaces().Any(i => i == typeof(IDictionary)))
                 return DictionaryExtension.GetValue(type, data, ref offset);
-
-            int count = IntExtension.GetValue(data, ref offset);
-            return GetValue(data, ref offset, count);
+            
+            return GetValue(data, ref offset);
         }
         
-        public static object GetValue(byte[] data, ref int offset, int count)
+        public static object GetValue(byte[] data, ref int offset)
         {
+            int count = IntExtension.GetValue(data, ref offset);
             byte[] result = new byte[count];
             Array.Copy(data, offset, result, 0, count);
             offset += count;
