@@ -6,6 +6,9 @@ using System.Reflection;
 using Serialization.Extensions;
 using UnityEngine;
 
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+public class NonSerializedAttribute : Attribute { }
+
 namespace Serialization
 {
     public class BinarySerialization
