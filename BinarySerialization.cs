@@ -20,14 +20,8 @@ namespace Serialization
                 return bytes;
 
             if (obj.GetType().IsClass)
-            {
-                List<byte> data = new List<byte>();
-                bytes = Serialization(obj);
-                data.AddRange(bytes.Length.GetBytes());
-                data.AddRange(bytes);
-                return data.ToArray();
-            }
-        
+                return Serialization(obj);
+
             return default;
         }
 
@@ -36,10 +30,7 @@ namespace Serialization
             var result = ObjectExtension.GetValue(type, data, ref offset);
             if(result != null)
                 return result;
-
-            if (type.IsClass)
-                return Deserialization(type, data, ref offset);
-
+            
             return default;
         }
 

@@ -35,7 +35,7 @@ namespace Serialization.Extensions
 
             if (value is IList list)
                 return list.GetBytes();
-
+            
             return data.ToArray();
         }
         
@@ -64,8 +64,11 @@ namespace Serialization.Extensions
             
             if (type.GetInterfaces().Any(i => i == typeof(IDictionary)))
                 return DictionaryExtension.GetValue(type, data, ref offset);
+
+            if(type.IsClass)
+                return BinarySerialization.Deserialization(type, data, ref offset);
             
-            return GetValue(data, ref offset);
+            return default;
         }
         
         public static object GetValue(byte[] data, ref int offset)
