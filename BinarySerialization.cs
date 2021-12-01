@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using BinSerialize.Extensions;
 using Serialization.Extensions;
 using UnityEngine;
 
@@ -47,7 +48,7 @@ namespace Serialization
             
             List<byte> result = new List<byte>();
         
-            foreach (var field in type.GetFields())
+            foreach (var field in type.GetReverseFields())
             {
                 if ( field.FieldType.GetCustomAttribute(typeof(SerializableAttribute), true) == null ||
                      field.FieldType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
@@ -57,7 +58,7 @@ namespace Serialization
                 result.AddRange(data);
             }
         
-            foreach (var property in type.GetProperties())
+            foreach (var property in type.GetReverseProperties())
             {
                 if ( property.PropertyType.GetCustomAttribute(typeof(SerializableAttribute), true) == null || 
                      property.PropertyType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
@@ -79,7 +80,7 @@ namespace Serialization
 
             object result = type.Assembly.CreateInstance(type.FullName);
 
-            foreach (var field in type.GetFields())
+            foreach (var field in type.GetReverseFields())
             {
                 if ( field.FieldType.GetCustomAttribute(typeof(SerializableAttribute), true) == null ||
                      field.FieldType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
@@ -88,7 +89,7 @@ namespace Serialization
                 field.SetValue(result, GetValue(field.FieldType, data, ref offset));
             }
         
-            foreach (var property in type.GetProperties())
+            foreach (var property in type.GetReverseProperties())
             {
                 if ( property.PropertyType.GetCustomAttribute(typeof(SerializableAttribute), true) == null || 
                      property.PropertyType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
