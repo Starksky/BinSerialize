@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BinSerialize.Extensions;
 using UnityEngine;
 
 namespace Serialization.Extensions
@@ -11,30 +12,36 @@ namespace Serialization.Extensions
         public static byte[] GetBytes(this object value)
         {
             List<byte> data = new List<byte>();
-            
+
             if (value is string s)
-                return s.GetBytes();
+                return StringExtension.GetBytes(s);
 
             if (value is int i)
-                return i.GetBytes();
+                return IntExtension.GetBytes(i);
 
             if (value is float f)
-                return f.GetBytes();
+                return FloatExtension.GetBytes(f);
 
+            if (value is long l)
+                return LongExtension.GetBytes(l);
+            
             if (value is byte b)
-                return b.GetBytes();
+                return ByteExtension.GetBytes(b);
 
             if (value is bool bo)
-                return bo.GetBytes();
-
+                return BoolExtension.GetBytes(bo);
+            
+            if (value is Enum)
+                return IntExtension.GetBytes(((int)value));
+            
             if (value is Array array)
-                return array.GetBytes();
+                return ArrayExtension.GetBytes(array);
             
             if (value is IDictionary dictionary)
-                return dictionary.GetBytes();
+                return DictionaryExtension.GetBytes(dictionary);
 
             if (value is IList list)
-                return list.GetBytes();
+                return ListExtension.GetBytes(list);
             
             return data.ToArray();
         }
@@ -49,12 +56,18 @@ namespace Serialization.Extensions
         
             if (type == typeof(float)) 
                 return FloatExtension.GetValue(data, ref offset);
+            
+            if (type == typeof(long)) 
+                return LongExtension.GetValue(data, ref offset);
         
             if(type == typeof(byte)) 
                 return ByteExtension.GetValue(data, ref offset);
 
             if (type == typeof(bool))
                 return BoolExtension.GetValue(data, ref offset);
+            
+            if (type.IsEnum)
+                return EnumExtension.GetValue(type, data, ref offset);
             
             if (type.IsArray)
                 return ArrayExtension.GetValue(type, data, ref offset);
@@ -101,7 +114,10 @@ namespace Serialization.Extensions
         
                 else if (typeof(T) == typeof(float)) 
                     result = FloatExtension.GetValue(array, ref offset);
-        
+                
+                else if (typeof(T) == typeof(long)) 
+                    result = LongExtension.GetValue(array, ref offset);
+                
                 else if(typeof(T) == typeof(byte)) 
                     result = ByteExtension.GetValue(array, ref offset);
 
