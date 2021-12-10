@@ -14,7 +14,7 @@ namespace Serialization
 {
     public class BinarySerialization
     {
-        private static byte[] GetBytes(object obj)
+        public static byte[] GetBytes(object obj)
         {
             var bytes = obj.GetBytes();
             if (bytes.Length > 0)
@@ -23,16 +23,16 @@ namespace Serialization
             if (obj.GetType().IsClass)
                 return Serialization(obj);
 
-            return default;
+            return null;
         }
 
-        private static object GetValue(Type type, in byte[] data, ref int offset)
+        public static object GetValue(Type type, in byte[] data, ref int offset)
         {
             var result = ObjectExtension.GetValue(type, data, ref offset);
             if(result != null)
                 return result;
             
-            return default;
+            return null;
         }
 
         public static byte[] Serialization(object obj)

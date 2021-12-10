@@ -14,7 +14,7 @@ namespace Serialization.Extensions
             data.AddRange(ObjectExtension.GetBytes(list.Count));
 
             foreach (var item in list)
-                data.AddRange(BinarySerialization.Serialization(item));
+                data.AddRange(BinarySerialization.GetBytes(item));
 
             return data.ToArray();
         }
@@ -29,7 +29,9 @@ namespace Serialization.Extensions
 
             for (int i = 0; i < count; i++)
             {
-                var value = BinarySerialization.Deserialization(valueType, data, ref offset);
+                var value = BinarySerialization.GetValue(valueType, data, ref offset);
+                if(value == null)
+                    BinarySerialization.Deserialization(valueType, data, ref offset);
                 result.Add(value);
             }
             
