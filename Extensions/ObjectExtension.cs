@@ -93,12 +93,12 @@ namespace Serialization.Extensions
             return result;
         }
         
-        public static object GetValue(Type type, byte[] data)
+        public static object GetValue(Type type, byte[] data, int startOffset = 0)
         {
-            int offset = 0;
+            int offset = startOffset;
             return GetValue(type, data, ref offset);
         }
-        
+
         public static T GetValue<T>(this object value)
         {
             if (value is byte[] array)
