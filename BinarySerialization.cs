@@ -55,9 +55,7 @@ namespace Serialization
                 if ( field.FieldType.GetCustomAttribute(typeof(SerializableAttribute), true) == null ||
                      field.FieldType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
                     continue;
-                
-                Debug.Log(field.Name);
-                
+
                 var data = GetBytes(field.GetValue(obj));
                 result.AddRange(data);
             }
