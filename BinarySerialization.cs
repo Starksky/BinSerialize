@@ -19,8 +19,10 @@ namespace Serialization
             var bytes = obj.GetBytes();
             if (bytes.Length > 0)
                 return bytes;
-
-            if (obj.GetType().IsClass)
+            
+            var type = obj.GetType();
+            bool isStruct = type.IsValueType && !type.IsEnum;
+            if (type.IsClass || isStruct)
                 return Serialization(obj);
 
             return null;
@@ -53,7 +55,9 @@ namespace Serialization
                 if ( field.FieldType.GetCustomAttribute(typeof(SerializableAttribute), true) == null ||
                      field.FieldType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
                     continue;
-
+                
+                Debug.Log(field.Name);
+                
                 var data = GetBytes(field.GetValue(obj));
                 result.AddRange(data);
             }
@@ -103,9 +107,17 @@ namespace Serialization
     
         public static T Deserialization<T>(in byte[] data) where T: class, new()
         {
-            Type type = typeof(T);
-            int offset = 0;
-            return Deserialization(type, data, ref offset) as T;
+            try
+            {
+                Type type = typeof(T);
+                int offset = 0;
+                return Deserialization(type, data, ref offset) as T;
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+                return null;
+            }
         }
     }
 }

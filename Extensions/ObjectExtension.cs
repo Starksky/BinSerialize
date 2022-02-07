@@ -78,7 +78,8 @@ namespace Serialization.Extensions
             if (type.GetInterfaces().Any(i => i == typeof(IDictionary)))
                 return DictionaryExtension.GetValue(type, data, ref offset);
 
-            if(type.IsClass)
+            bool isStruct = type.IsValueType && !type.IsEnum;
+            if(type.IsClass || isStruct)
                 return BinarySerialization.Deserialization(type, data, ref offset);
             
             return default;
