@@ -53,9 +53,11 @@ namespace Serialization
             foreach (var field in type.GetReverseFields())
             {
                 if ( field.FieldType.GetCustomAttribute(typeof(SerializableAttribute), true) == null ||
-                     field.FieldType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
+                     field.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
                     continue;
 
+                //Debug.Log(field.Name);
+                
                 var data = GetBytes(field.GetValue(obj));
                 result.AddRange(data);
             }
@@ -63,7 +65,7 @@ namespace Serialization
             foreach (var property in type.GetReverseProperties())
             {
                 if ( property.PropertyType.GetCustomAttribute(typeof(SerializableAttribute), true) == null || 
-                     property.PropertyType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
+                     property.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
                     continue;
             
                 var data = GetBytes(property.GetValue(obj));
@@ -85,7 +87,7 @@ namespace Serialization
             foreach (var field in type.GetReverseFields())
             {
                 if ( field.FieldType.GetCustomAttribute(typeof(SerializableAttribute), true) == null ||
-                     field.FieldType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
+                     field.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
                     continue;
 
                 field.SetValue(result, GetValue(field.FieldType, data, ref offset));
@@ -94,9 +96,9 @@ namespace Serialization
             foreach (var property in type.GetReverseProperties())
             {
                 if ( property.PropertyType.GetCustomAttribute(typeof(SerializableAttribute), true) == null || 
-                     property.PropertyType.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
+                     property.GetCustomAttribute(typeof(NonSerializedAttribute), true) != null)
                     continue;
-
+                
                 property.SetValue(result, GetValue(property.PropertyType, data, ref offset));
             }
         
